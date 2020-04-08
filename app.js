@@ -1,7 +1,10 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const bodyParser = require('body-parser');  
 const port = 3030;
+
+const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 // config
 const yahooWeatherAPIUrl = 'https://weather-ydn-yql.media.yahoo.com/forecastrss';
@@ -10,19 +13,17 @@ const clientSecretKey = '{clientKey}';
 const appName = '{appName}';
 // config
 
-app.use(cors())
+app.use(cors());
+app.use(bodyParser.json());
 
-app.get('/', (req, res) => res.send('Hello World!'))
+app.get('/', (req, res) => res.json({'status': 'ok'}))
 
 app.listen(port, () => console.log(`App listening at http://localhost:${port}`));
 
-app.get('/getUSCities', (request, response) => {
-    response.json(['New York', 'New Jersi']);
-});
-
-app.post('/getForcastFor',  async (request, response) => {
-    const city = "New York, NY";
-    console.log(request.body);
+app.post('/getForcastFor', urlencodedParser,  async (request, response) => {
+    // const city = "New York, NY";
+    // console.log(request.body);
+    const { city } = request.body;
 
     const OAuth = require('oauth');
     const header = {
@@ -51,5 +52,4 @@ app.post('/getForcastFor',  async (request, response) => {
             }
         }
     );
-    // response.json(forcast);
 });
